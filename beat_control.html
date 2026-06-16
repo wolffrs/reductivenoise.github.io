@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BACKSTAGE OPERATOR PANEL - ADVANCED TESTING SUITE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #0d0d11;
+      color: #a0a5b5;
+      font-family: "Courier New", monospace;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    h1 {
+      color: #ffffff;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.1em;
+      border-bottom: 1px solid #222530;
+      padding-bottom: 0.5rem;
+    }
+    #status {
+      font-size: 0.85rem;
+      color: #ff9f43;
+      background: #1e1e24;
+      padding: 0.75rem 1rem;
+      border-left: 3px solid #ff9f43;
+      margin-bottom: 2rem;
+    }
+    .system-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2rem;
+    }
+    .panel-section {
+      background: #141419;
+      border: 1px solid #222530;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-title {
+      font-size: 0.85rem;
+      color: #6c7285;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+      letter-spacing: 0.05em;
+    }
+    .layer-row {
+      background: #191922;
+      border: 1px solid #252533;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      display: grid;
+      grid-template-columns: 140px 1fr auto;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .layer-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .layer-name {
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+    .beat-container {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .beat-block {
+      flex: 1;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1px solid transparent;
+      user-select: none;
+      transition: all 0.1s ease;
+    }
+    .beat-block.play {
+      background: #00ff66;
+      color: #000000;
+    }
+    .beat-block.silence {
+      background: #3a1c24;
+      color: #ff4757;
+      border-color: #ff4757;
+    }
+    .beat-block.current-step {
+      box-shadow: 0 0 0 3px #ffffff inset;
+    }
+    .control-btn {
+      background: #222530;
+      color: #e0e0e0;
+      border: 1px solid #323242;
+      padding: 0.5rem 0.75rem;
+      font-family: monospace;
+      font-size: 0.75rem;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    .control-btn:hover {
+      background: #323242;
+    }
+    .control-btn.muted-active {
+      background: #ff4757;
+      color: #ffffff;
+      border-color: #ff4757;
+    }
+    .control-bar {
+      display: flex;
+      gap: 1rem;
+    }
+    .action-btn {
+      background: #00ff66;
+      color: #000000;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    .action-btn.neutral {
+      background: #323242;
+      color: #ffffff;
+    }
+    .action-btn.danger {
+      background: #ff4757;
+      color: #ffffff;
+    }
+    .volume-box {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    input[type="range"] {
+      accent-color: #00ff66;
+      background: #222530;
+      width: 100%;
+    }
+    .terminal {
+      background: #050508;
+      border: 1px solid #1c1c24;
+      font-size: 0.75rem;
+      color: #8c92a5;
+      padding: 1rem;
+      height: 250px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>EXHIBITION CONTROL CONSOLE - OPERATOR MASTER DESK</h1>
+  <div id="status">
+    HARDWARE SYSTEM DISCONNECTED. ATTACH USB UNIT AND INITIALIZE PORT.
+  </div>
+
+  <div class="system-grid">
+    <div>
+      <div class="panel-section">
+        <div class="section-title">
+          Manual Beat Configuration &amp; Testing Matrix (Click block to toggle
+          state manually)
+        </div>
+
+        <div class="layer-row">
+          <div class="layer-info">
+            <span class="layer-name">Track Layer 1</span>
+            <button class="control-btn" onclick="toggleCurrentBeatGap(1)">
+              Trigger [Q]
+            </button>
+          </div>
+          <div class="beat-container" id="grid-row-1"></div>
+          <button
+            class="control-btn"
+            id="kill-1"
+            onclick="toggleLayerKillSwitch(1)"
+          >
+            Kill Layer
+          </button>
+        </div>
+
+        <div class="layer-row">
+          <div class="layer-info">
+            <span class="layer-name">Track Layer 2</span>
+            <button class="control-btn" onclick="toggleCurrentBeatGap(2)">
+              Trigger [W]
+            </button>
+          </div>
+          <div class="beat-container" id="grid-row-2"></div>
+          <button
+            class="control-btn"
+            id="kill-2"
+            onclick="toggleLayerKillSwitch(2)"
+          >
+            Kill Layer
+          </button>
+        </div>
+
+        <div class="layer-row">
+          <div class="layer-info">
+            <span class="layer-name">Track Layer 3</span>
+            <button class="control-btn" onclick="toggleCurrentBeatGap(3)">
+              Trigger [E]
+            </button>
+          </div>
+          <div class="beat-container" id="grid-row-3"></div>
+          <button
+            class="control-btn"
+            id="kill-3"
+            onclick="toggleLayerKillSwitch(3)"
+          >
+            Kill Layer
+          </button>
+        </div>
+
+        <div class="layer-row">
+          <div class="layer-info">
+            <span class="layer-name">Track Layer 4</span>
+            <button class="control-btn" onclick="toggleCurrentBeatGap(4)">
+              Trigger [R]
+            </button>
+          </div>
+          <div class="beat-container" id="grid-row-4"></div>
+          <button
+            class="control-btn"
+            id="kill-4"
+            onclick="toggleLayerKillSwitch(4)"
+          >
+            Kill Layer
+          </button>
+        </div>
+      </div>
+
+      <div class="control-bar">
+        <button class="action-btn" onclick="initSerialPort()">
+          Link USB Hardware Unit
+        </button>
+        <button
+          class="action-btn neutral"
+          id="play-btn"
+          onclick="togglePlay()"
+        >
+          Play / Pause Loop (Space)
+        </button>
+        <button class="action-btn danger" onclick="resetAllGaps()">
+          Complete Reset
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel-section">
+        <div class="section-title">Master Volume Settings</div>
+        <div class="volume-box">
+          <input
+            id="master-volume"
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0.8"
+            oninput="updateMasterVolume(this.value)"
+          />
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-title">Hardware Event Bus Log</div>
+        <div class="terminal" id="logger">
+          System idle. Awaiting hardware setup link.
+        </div>
+      </div>
+
+      <audio id="audio-1" src="layer1.wav" loop></audio>
+      <audio id="audio-2" src="layer2.wav" loop></audio>
+      <audio id="audio-3" src="layer3.wav" loop></audio>
+      <audio id="audio-4" src="layer4.wav" loop></audio>
+    </div>
+  </div>
+
+  <script>
+    const audioContext =
+      new (window.AudioContext || window.webkitAudioContext)();
+    const now = () => audioContext.currentTime;
+
+    const state = {
+      currentBeat: 0,
+      gaps: { 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set() },
+      killedLayers: { 1: false, 2: false, 3: false, 4: false },
+      isPlaying: false,
+      totalBeats: 6,
+      secondsPerBeat: 1.0,
+      masterVolumeLevel: 0.8,
+    };
+
+    const mediaElements = {};
+    const sourceNodes = {};
+    const gainNodes = {};
+    let masterGainNode = null;
+
+    let loopStartTime = 0;
+    let lastScheduledBeat = -1;
+    let animationFrameId = null;
+    const keyMap = { q: 1, w: 2, e: 3, r: 4 };
+
+    let serialPort = null;
+    let serialWriter = null;
+    let serialReader = null;
+
+    function logEvent(msg) {
+      const term = document.getElementById("logger");
+      term.textContent += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
+      term.scrollTop = term.scrollHeight;
+    }
+
+    function initAudioEngine() {
+      if (masterGainNode) return;
+
+      masterGainNode = audioContext.createGain();
+      masterGainNode.gain.setValueAtTime(state.masterVolumeLevel, now());
+      masterGainNode.connect(audioContext.destination);
+
+      for (let i = 1; i <= 4; i++) {
+        mediaElements[i] = document.getElementById(`audio-${i}`);
+        sourceNodes[i] = audioContext.createMediaElementSource(
+          mediaElements[i]
+        );
+        gainNodes[i] = audioContext.createGain();
+
+        sourceNodes[i].connect(gainNodes[i]);
+        gainNodes[i].connect(masterGainNode);
+      }
+      logEvent("Audio routing system connected successfully.");
+    }
+
+    function createInteractiveGrid() {
+      for (let layer = 1; layer <= 4; layer++) {
+        const container = document.getElementById(`grid-row-${layer}`);
+        container.innerHTML = "";
+
+        for (let b = 0; b < state.totalBeats; b++) {
+          const block = document.createElement("div");
+          block.id = `block-${layer}-${b}`;
+          block.className = "beat-block play";
+          block.textContent = "PLAY";
+
+          block.addEventListener("click", () => {
+            if (state.gaps[layer].has(b)) {
+              state.gaps[layer].delete(b);
+            } else {
+              state.gaps[layer].add(b);
+            }
+            updateUI();
+            sendBeatStatesToHardware(layer);
+          });
+
+          container.appendChild(block);
+        }
+      }
+      updateUI();
+    }
+
+    function updateUI() {
+      for (let layer = 1; layer <= 4; layer++) {
+        for (let b = 0; b < state.totalBeats; b++) {
+          const block = document.getElementById(`block-${layer}-${b}`);
+          if (!block) continue;
+
+          block.classList.remove("current-step");
+
+          if (state.gaps[layer].has(b) || state.killedLayers[layer]) {
+            block.className = "beat-block silence";
+            block.textContent = "SILENCE";
+          } else {
+            block.className = "beat-block play";
+            block.textContent = "PLAY";
+          }
+
+          if (state.isPlaying && state.currentBeat === b) {
+            block.classList.add("current-step");
+          }
+        }
+
+        const killBtn = document.getElementById(`kill-${layer}`);
+        if (state.killedLayers[layer]) {
+          killBtn.classList.add("muted-active");
+          killBtn.textContent = "LAYER MUTED";
+        } else {
+          killBtn.classList.remove("muted-active");
+          killBtn.textContent = "KILL LAYER";
+        }
+      }
+
+      const playBtn = document.getElementById("play-btn");
+      playBtn.textContent = state.isPlaying
+        ? "PAUSE LOOP (SPACE)"
+        : "PLAY LOOP (SPACE)";
+    }
+
+    async function initSerialPort() {
+      if (!("serial" in navigator)) {
+        alert(
+          "Please use a browser that supports Web Serial (Chrome / Edge / Opera with flags)."
+        );
+        return;
+      }
+
+      try {
+        serialPort = await navigator.serial.requestPort();
+        await serialPort.open({ baudRate: 115200 });
+
+        serialWriter = serialPort.writable.getWriter();
+
+        document.getElementById("status").textContent =
+          "SYSTEM ACTIVE: ARDUINO CONNECTED.";
+        document.getElementById("status").style.borderColor = "#00ff66";
+        document.getElementById("status").style.color = "#00ff66";
+        logEvent("Serial port initialized at 115200 baud.");
+        readSerialInput();
+        sendAllBeatsToHardware();
+      } catch (err) {
+        console.error(err);
+        document.getElementById("status").textContent =
+          "CRITICAL ERROR: PORT CONNECTION LINK FAULT.";
+        document.getElementById("status").style.borderColor = "#ff4757";
+        document.getElementById("status").style.color = "#ff4757";
+      }
+    }
+
+    async function readSerialInput() {
+      while (serialPort && serialPort.readable) {
+        const textDecoder = new TextDecoderStream();
+        const readableStreamClosed = serialPort.readable.pipeTo(
+          textDecoder.writable
+        );
+        serialReader = textDecoder.readable.getReader();
+
+        try {
+          let buffer = "";
+          while (true) {
+            const { value, done } = await serialReader.read();
+            if (done) break;
+            if (value) {
+              buffer += value;
+              if (buffer.includes("\n")) {
+                const lines = buffer.split("\n");
+                buffer = lines.pop();
+                for (let line of lines) {
+                  line = line.trim();
+                  if (!line) continue;
+
+                  logEvent(`Hardware Rx Signal: "${line}"`);
+
+                    if (line === "BTN1") {
+                        toggleCurrentBeatGap(1);
+                        sendBeatStatesToHardware(1);   // <-- instant LED update
+                    }
+                    else if (line === "BTN2") {
+                        toggleCurrentBeatGap(2);
+                        sendBeatStatesToHardware(2);
+                    }
+                    else if (line === "BTN3") {
+                        toggleCurrentBeatGap(3);
+                        sendBeatStatesToHardware(3);
+                    }
+                    else if (line === "BTN4") {
+                        toggleCurrentBeatGap(4);
+                        sendBeatStatesToHardware(4);
+                    }
+
+                }
+              }
+            }
+          }
+        } catch (error) {
+          logEvent(`Serial input exception encountered: ${error}`);
+        } finally {
+          serialReader.releaseLock();
+        }
+      }
+    }
+
+    function getLayerBeatStateString(layer) {
+      let s = "";
+      for (let b = 0; b < state.totalBeats; b++) {
+        const isSilent = state.gaps[layer].has(b) || state.killedLayers[layer];
+        s += isSilent ? "0" : "1";
+      }
+      return s;
+    }
+
+    async function sendBeatStatesToHardware(layer) {
+      if (!serialWriter) return;
+
+      const beatString = getLayerBeatStateString(layer);
+      const msg = `BEATS${layer}:${beatString}\n`;
+
+      try {
+        await serialWriter.write(new TextEncoder().encode(msg));
+      } catch (err) {
+        logEvent("Transmission error: " + err);
+      }
+    }
+
+    function sendAllBeatsToHardware() {
+      for (let i = 1; i <= 4; i++) {
+        sendBeatStatesToHardware(i);
+      }
+    }
+
+    function updateMasterVolume(val) {
+      state.masterVolumeLevel = parseFloat(val);
+      if (masterGainNode) {
+        masterGainNode.gain.setTargetAtTime(
+          state.masterVolumeLevel,
+          now(),
+          0.01
+        );
+      }
+    }
+
+    function toggleCurrentBeatGap(layer) {
+      initAudioEngine();
+      const currentBeatIndex = state.currentBeat;
+
+      if (state.gaps[layer].has(currentBeatIndex)) {
+        state.gaps[layer].delete(currentBeatIndex);
+      } else {
+        state.gaps[layer].add(currentBeatIndex);
+      }
+
+      updateUI();
+      sendBeatStatesToHardware(layer);
+    }
+
+    function toggleLayerKillSwitch(layer) {
+      initAudioEngine();
+      state.killedLayers[layer] = !state.killedLayers[layer];
+      updateUI();
+      sendBeatStatesToHardware(layer);
+      logEvent(
+        `Layer ${layer} kill switch toggled: ${state.killedLayers[layer]}`
+      );
+    }
+
+    function processScheduler() {
+      if (!state.isPlaying) return;
+
+      const contextTime = now();
+      const elapsedInLoop = (contextTime - loopStartTime) % state.totalBeats;
+      const currentExactBeat = Math.floor(elapsedInLoop);
+
+      if (currentExactBeat !== lastScheduledBeat) {
+        state.currentBeat = currentExactBeat;
+        lastScheduledBeat = currentExactBeat;
+
+        // Send current beat to Arduino for LED highlight
+        if (serialWriter) {
+          const msg = `CUR:${state.currentBeat}\n`;
+          serialWriter.write(new TextEncoder().encode(msg));
+        }
+
+        // Optional failsafe: re-align audio at beat 0
+        if (currentExactBeat === 0) {
+          for (let i = 1; i <= 4; i++) {
+            if (mediaElements[i] && !mediaElements[i].paused) {
+              mediaElements[i].currentTime = 0;
+            }
+          }
+          logEvent("Failsafe engaged: Audio layers phase-aligned to Beat 1.");
+        }
+
+        document.getElementById(
+          "status"
+        ).textContent = `SYSTEM RUNNING: TIME MATRIX PULSE STEP → [${
+          state.currentBeat + 1
+        } / 6]`;
+
+        updateUI();
+
+        // Send BEATS1–4 every beat (continuous sync)
+        sendAllBeatsToHardware();
+      }
+
+      for (let layer = 1; layer <= 4; layer++) {
+        if (!gainNodes[layer]) continue;
+
+        const isMuted =
+          state.gaps[layer].has(currentExactBeat) || state.killedLayers[layer];
+        const targetVol = isMuted ? 0.0 : 1.0;
+
+        gainNodes[layer].gain.setTargetAtTime(targetVol, contextTime, 0.015);
+      }
+
+      animationFrameId = requestAnimationFrame(processScheduler);
+    }
+
+    function startLoops() {
+      initAudioEngine();
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+      loopStartTime = now();
+      lastScheduledBeat = -1;
+
+      for (let i = 1; i <= 4; i++) {
+        if (mediaElements[i]) {
+          mediaElements[i].currentTime = 0;
+          mediaElements[i].play();
+        }
+      }
+
+      processScheduler();
+      updateUI();
+      logEvent("Master loop playback scheduler active.");
+    }
+
+    function stopLoops() {
+      cancelAnimationFrame(animationFrameId);
+      for (let i = 1; i <= 4; i++) {
+        if (mediaElements[i]) mediaElements[i].pause();
+      }
+      updateUI();
+      logEvent("Master loop playback scheduler suspended.");
+    }
+
+    function togglePlay() {
+      state.isPlaying = !state.isPlaying;
+      if (state.isPlaying) {
+        startLoops();
+      } else {
+        stopLoops();
+      }
+    }
+
+    function resetAllGaps() {
+      state.gaps = {
+        1: new Set(),
+        2: new Set(),
+        3: new Set(),
+        4: new Set(),
+      };
+      state.killedLayers = { 1: false, 2: false, 3: false, 4: false };
+      logEvent("Global configuration tables flushed back to baseline.");
+      updateUI();
+      sendAllBeatsToHardware();
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        togglePlay();
+        return;
+      }
+      if (e.code === "Backspace") {
+        e.preventDefault();
+        resetAllGaps();
+        return;
+      }
+      const layer = keyMap[e.key.toLowerCase()];
+      if (layer) {
+        e.preventDefault();
+        toggleCurrentBeatGap(layer);
+      }
+    });
+
+    // Boot
+    createInteractiveGrid();
+    setTimeout(() => {
+      initAudioEngine();
+    }, 200);
+  </script>
+</body>
+</html>
